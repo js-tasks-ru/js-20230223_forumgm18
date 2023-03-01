@@ -6,11 +6,13 @@
  */
 export function sortStrings(arr, param = 'asc') {
   const ar = [...arr];
+  const compare = (a, b) => a.localeCompare(b, ['ru', 'en'],{ caseFirst: 'upper', numeric: true });
+
   switch(param) {
     case 'asc':
-      return ar.sort((a, b) => a.localeCompare(b, undefined,{ caseFirst: 'upper' }));
+      return ar.sort(compare);
     case 'desc':
-      return ar.sort((a, b) => a.localeCompare(b, undefined,{ caseFirst: 'upper' })).reverse();
+      return ar.sort((a, b) => -compare(a, b));
     default : return ar;  
   }
 }
