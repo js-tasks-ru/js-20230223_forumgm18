@@ -2,15 +2,17 @@ export default class SortableTable {
   subElements = {};
   constructor(headerConfig = [], data = []) {
     this.headerConfig = headerConfig;
-    this.data = data;
-    this.render()
+    this.data = [...data];
+    this.render();
   }
   render() {
-    const wrp = document.createElement('div');
-    wrp.innerHTML = `
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
         <div class="sortable-table">
-          ${this.headerTpl()}
-          ${this.bodyTpl(this.data)}
+          ${this.getTableHeader()}
+          <div data-element="body" class="sortable-table__body">
+            ${this.getTableBody(this.data)}
+          </div>
           <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
           <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
             <div>
@@ -20,7 +22,7 @@ export default class SortableTable {
           </div>
         </div>  
     `;
-     this.element = wrp.firstElementChild; 
+     this.element = wrapper.firstElementChild; 
      this.getSubElements();
   }
   getSubElements(){
@@ -28,15 +30,15 @@ export default class SortableTable {
       .querySelectorAll('[data-element]')
       .forEach(el => this.subElements[el.dataset.element] = el);
   }
-  headerTpl() {
-    const headCells = this.headerConfig.map(el => this.headerCell(el));
+  getTableHeader() {
+    const headCells = this.headerConfig.map(el => this.getHeaderCell(el));
     return `
       <div data-element="header" class="sortable-table__header sortable-table__row">
         ${headCells.join('')}
       </div>
     `
   }
-  headerCell({id, title, sortable}) {
+  getHeaderCell({id, title, sortable}) {
     return `
       <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
         <span>${title}</span>
@@ -47,26 +49,23 @@ export default class SortableTable {
     `
   }
 
-  bodyRowTpl(el) {
-    const rowArr = this.headerConfig.map(itm => this.bodyRowCellTpl(el, itm));
+  getTableBodyRow(el) {
+    const rowArr = this.headerConfig.map(itm => this.getTableBodyRowCell(el, itm));
     return `
       <a href="/products/${el.id}" class="sortable-table__row">
-      ${rowArr.join('')}
+        ${rowArr.join('')}
       </a>
     `
   }
 
-  bodyRowCellTpl(curDataRow, { id, template }) {
+  getTableBodyRowCell(curDataRow, { id, template }) {
     return template ? template(curDataRow[id]) : `<div class="sortable-table__cell">${curDataRow[id]}</div>` 
   }
 
-  bodyTpl(data) {
-    const bobyRows = data.map(el => this.bodyRowTpl(el));
-    return `
-      <div data-element="body" class="sortable-table__body">
-        ${bobyRows.join('')}
-      </div>
-      `
+  getTableBody(data) {
+    return data
+      .map(el => this.getTableBodyRow(el))
+      .join('')
   }
 
   sort(field, order){
@@ -75,7 +74,7 @@ export default class SortableTable {
       .querySelectorAll('[data-order]')
       .forEach(el => el.dataset.order = '');
     if (headerOrderedFiled) headerOrderedFiled.dataset.order = order; 
-    this.subElements.body.innerHTML = this.bodyTpl(this.dataSort(field, order));
+    this.subElements.body.innerHTML = this.getTableBody(this.dataSort(field, order));
   }
   dataSort(field, order = 'asc'){
     const 

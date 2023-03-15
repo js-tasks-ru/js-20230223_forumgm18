@@ -1,10 +1,9 @@
 export default class NotificationMessage {
   static currentNM;
-  subElem = {};
   constructor(message = '', {
     duration = 2000,
     type = 'success',
-    title = 'Notification'
+    title = ''
   } = {}) {
     this.duration = duration;
     this.type = type;
@@ -29,16 +28,10 @@ export default class NotificationMessage {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = this.template; 
     this.element = wrapper.firstElementChild;
-    this.setSubElems();
-  }
-  setSubElems() {
-    this.element
-      .querySelectorAll('[data-elem]')
-      .forEach(el => this.subElem[el.dataset.elem] = el);
   }
   show(node = document.body) {
     if ( NotificationMessage.currentNM) 
-      this.destroy.call(NotificationMessage.currentNM);
+      NotificationMessage.currentNM.destroy();
     
     NotificationMessage.currentNM = this; 
     node.append(this.element);
