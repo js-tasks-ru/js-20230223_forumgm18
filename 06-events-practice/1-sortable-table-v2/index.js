@@ -1,9 +1,12 @@
 export default class SortableTable {
   subElements = {};
-  constructor(headersConfig, {
-    data = [],
-    sorted = {},
-    isSortLocally = true
+  constructor(headersConfig, { 
+    data = [], 
+    sorted = {
+      id: headersConfig.find(item => item.sortable).id, 
+      order: 'desc'
+    }, 
+    isSortLocally = true 
   } = {}) {
     this.headerConfig = headersConfig;
     this.data = [...data];
@@ -29,11 +32,7 @@ export default class SortableTable {
     `;
      this.element = wrapper.firstElementChild; 
      this.getSubElements();
-     if (this.sorted.id) {
-      this.sort(this.sorted.id, this.sorted.order)
-     } else {
-      this.subElements.body.innerHTML = this.getTableBody(this.data)
-     }
+     this.sort(this.sorted.id, this.sorted.order)
 
   }
   getSubElements(){
@@ -44,7 +43,6 @@ export default class SortableTable {
   addListeners() {
     this.subElements.header.addEventListener('pointerdown', e => {
       const cell = e.target.closest('[data-sortable="true"]');
-      console.log(cell);
       if (cell) {
         const id = cell.dataset.id;
         let order;  
@@ -56,7 +54,7 @@ export default class SortableTable {
             order = 'asc';
             break;
           default: 
-            order = 'asc';
+            order = 'desc';
         }
         this.sort(id, order);
       }

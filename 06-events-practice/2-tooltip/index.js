@@ -16,24 +16,26 @@ class Tooltip {
   pointerMove = (e) => {
     this.element.textContent = e.target.dataset.tooltip;
     this.element.style.left = `${e.x}px`;
-    this.element.style.top = `${e.y + 10}px`;
+    this.element.style.top = `${e.y + 15}px`;
+  };
+
+  pointerOver = (e) => {
+    if ( e.target.dataset.tooltip != undefined) {
+      this.render(e.target.dataset.tooltip);
+      e.target.addEventListener('pointermove', this.pointerMove )
+    }
+  };
+
+  pointerOut = (e) => {
+    if ( e.target.dataset.tooltip != undefined) {
+      e.target.removeEventListener('pointermove', this.pointerMove )
+      this.destroy();
+    }
   };
 
   initialize () {
-    document.addEventListener('pointerover', e => {
-      if ( e.target.dataset.tooltip != undefined) {
-        this.render(e.target.dataset.tooltip);
-        e.target.addEventListener('pointermove', this.pointerMove )
-      }
-    });
-
-    document.addEventListener('pointerout', e => {
-      if ( e.target.dataset.tooltip != undefined) {
-        e.target.removeEventListener('pointermove', this.pointerMove )
-        this.destroy();
-      }
-    });
-
+    document.addEventListener('pointerover', this.pointerOver);
+    document.addEventListener('pointerout', this.pointerOut);
   }
 
   remove() {
@@ -41,6 +43,8 @@ class Tooltip {
   }
 
   destroy() {
+    // document.removeEventListener('pointerover', this.pointerOver);
+    // document.removeEventListener('pointerout', this.pointerOut);
     this.remove();
     Tooltip.self = null;
   }
