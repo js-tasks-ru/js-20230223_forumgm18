@@ -4,47 +4,50 @@ class Tooltip {
   constructor() {
     if (Tooltip.self) return Tooltip.self; 
     Tooltip.self = this;
+    this.element = document.createElement('div');
+    this.element.classList.add('tooltip')
+  }
+  initialize () {
+    document.body.append(this.element);
+    document.addEventListener('pointerover', this.pointerOver);
+    document.addEventListener('pointerout', this.pointerOut);
   }
 
   render(text) {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `<div class="tooltip">${text}</div>`;
-    this.element = wrapper.firstElementChild;
-    document.body.append(this.element);
+    if (this.element) this.element.textContent = text
   }
   
   pointerMove = (e) => {
-    this.element.textContent = e.target.dataset.tooltip;
-    this.element.style.left = `${e.x}px`;
-    this.element.style.top = `${e.y + 15}px`;
+    const shift = 10;
+    this.element.style.left = `${Math.round(e.clientX + shift)}px`;
+    this.element.style.top = `${e.clientY + shift}px`;
   };
 
   pointerOver = (e) => {
-    if ( e.target.dataset.tooltip != undefined) {
-      this.render(e.target.dataset.tooltip);
+    const tooltip = e.target.dataset.tooltip;
+    if ( tooltip ) {
+      this.render(tooltip);
+      this.initialize()
       e.target.addEventListener('pointermove', this.pointerMove )
     }
   };
 
   pointerOut = (e) => {
-    if ( e.target.dataset.tooltip != undefined) {
+    if ( e.target.dataset.tooltip ) {
       e.target.removeEventListener('pointermove', this.pointerMove )
-      this.destroy();
+      this.remove();
     }
   };
 
-  initialize () {
-    document.addEventListener('pointerover', this.pointerOver);
-    document.addEventListener('pointerout', this.pointerOut);
-  }
 
   remove() {
     if (this.element) this.element.remove();
   }
 
   destroy() {
-    // document.removeEventListener('pointerover', this.pointerOver);
-    // document.removeEventListener('pointerout', this.pointerOut);
+    document.removeEventListener('pointerover', this.pointerOver);
+    document.removeEventListener('pointerout', this.pointerOut);
+    document.removeEventListener('pointerout', this.pointerMove);
     this.remove();
     Tooltip.self = null;
   }
