@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<head>
+  <title>DoubleSlider</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="module">
+    import DoubleSlider from './index.js';
+    const conf = { min: 100, max: 200,  selected: { from: 120, to: 150 } }
+
+    const slider = new DoubleSlider(conf);
+
+    root.append(slider.element);
+  </script>
+</body>
