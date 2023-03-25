@@ -1,9 +1,8 @@
 import fetchJson from './utils/fetch-json.js';
 
-const BACKEND_URL = 'https://course-js.javascript.ru/';
+const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class ColumnChart {
-  defaultHost = BACKEND_URL;
   subElements = {};
   url = '';
   range = {};
@@ -25,6 +24,7 @@ export default class ColumnChart {
 
   setOptions(opt) {
     Object.entries(opt).forEach(([key, val]) => this[key] = val);
+    this.url = new URL(this.url, BACKEND_URL);
   }
 
   get getLoadingClass() {
@@ -79,7 +79,6 @@ export default class ColumnChart {
       .forEach(el => this.subElements[el.dataset.element] = el);
   }
 
-  get fetchUrl() { return this.defaultHost + this.url; }
 
   updateChartBody() {
     const {body} = this.subElements;
@@ -88,12 +87,19 @@ export default class ColumnChart {
   async update(from, to) {
     try {
       this.element.classList.add('column-chart_loading');
-      const data = await fetchJson(this.fetchUrl, {from, to});
+
+      this.url.searchParams.set('from', from.toISOString());
+      this.url.searchParams.set('to', to.toISOString());
+
+      const data = await fetchJson(this.url);
       this.data = data;
+
       this.updateChartBody()
+
       this.element.classList.remove('column-chart_loading');
 
       return data;
+
     } catch(e) {
       console.log(e);
     }
