@@ -33,13 +33,11 @@ export default class SortableTable {
     this.preRender();
     this.getSubElements();
     this.addListeners();
-    // this.updateTable();
     this.render();
 
  }
-  preRender() {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
+  template() {
+     return `
         <div class="sortable-table ${this.loadingClass}">
           ${this.getTableHeader()}
           <div data-element="body" class="sortable-table__body"></div>
@@ -52,7 +50,12 @@ export default class SortableTable {
           </div>
         </div>  
     `;
-     this.element = wrapper.firstElementChild; 
+
+  }
+  preRender() {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = this.template();
+    this.element = wrapper.firstElementChild; 
   }
 
   getSubElements(){
@@ -142,15 +145,6 @@ export default class SortableTable {
     }
   }
   sortOnClient(field, order) {
-    // const 
-    //   {header, body} = this.subElements,
-    //   headerOrderedFiled = header.querySelector(`[data-id="${field}"]`)
-    // ;
-    // header
-    //   .querySelectorAll('[data-order]')
-    //   .forEach(el => el.dataset.order = '');
-
-    // if (headerOrderedFiled) headerOrderedFiled.dataset.order = order; 
     const 
       { body } = this.subElements,
       sortedData = this.dataSort(field, order)
@@ -203,6 +197,7 @@ export default class SortableTable {
 
     } catch(e) {
       console.error(e);
+      return Promise.reject(err);
     }
   }
 
