@@ -2,10 +2,9 @@ import fetchJson from './utils/fetch-json.js';
 
 const BACKEND_URL = 'https://course-js.javascript.ru';
 
-const DEFAULT_LOADING_CLASS  = 'sortable-table_loading';
-// 'api/dashboard/bestsellers',
 export default class SortableTable {
   subElements = {};
+  defaultLoadingClass = 'sortable-table_loading';
 
   constructor(headersConfig, { 
     url = '',
@@ -15,7 +14,7 @@ export default class SortableTable {
       order: 'desc'
     }, 
     isSortLocally = false,
-    loadingClass = DEFAULT_LOADING_CLASS,
+    loadingClass = this.defaultLoadingClass,
     start = 1,
     step = 20,
 
@@ -31,12 +30,14 @@ export default class SortableTable {
     this.loadingClass = loadingClass;
     this.isLoading = false;  
   
-    this.render();
+    this.preRender();
     this.getSubElements();
     this.addListeners();
-    this.updateTable();
+    // this.updateTable();
+    this.render();
+
  }
-  render() {
+  preRender() {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
         <div class="sortable-table ${this.loadingClass}">
@@ -215,7 +216,7 @@ export default class SortableTable {
       body.append(...newRows.childNodes);
   }
 
-  async updateTable(id = this.sorted.id, order = this.sorted.order, start = this.start, end = this.end) {
+  async render(id = this.sorted.id, order = this.sorted.order, start = this.start, end = this.end) {
     this.element.classList.add(this.loadingClass);
     try {
       this.sorted = { id, order }
